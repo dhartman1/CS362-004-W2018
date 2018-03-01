@@ -1,100 +1,60 @@
-/*
-* unittest1.c
-* Alvin Le
-* CS362
-*/
+/******************************************************************************
+ * AUTHOR: David Hartman
+ * CLASS: CS362
+ * DATE: 2018-02-04
+ * PROJECT: Assignment 3
+ * DESCRIPTION:
+ ******************************************************************************/
 
-/*
-* Include the following lines in your makefile:
-*
-* unittest1: unittest1.c dominion.o rngs.o
-*      gcc -o unittest1 -g  unittest1.c dominion.o rngs.o $(CFLAGS)
-*/
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "dominion.h"
 #include "dominion_helpers.h"
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
 #include "rngs.h"
-#include <stdlib.h>
 
-#define TESTFUNCTION "getCost()"
+#define assertExit 0
 
-int asserttrue(int val1, int val2, int *fail)
-{
-	if (val1 != val2)
-	{
-		printf("***FAILED ASSERTION: %d == %d***\n", val1, val2);
-		(*fail)++;
-		return 0;
-	}
-	return 1;
+void asserttrue(int test, int exitOnFail);
+
+void testDiscardCard(struct gameState *state) {
+  // Store a copy of the gameState before the card is played
+  struct gameState pre;
+  memcpy (&pre, state, sizeof(struct gameState));
+
+  int player = whoseTurn(state);
+
+  discardCard(0, player, state, 0);
+  printf("discardCard(): ");
+  asserttrue(state->handCount[player] == (pre.handCount[player]-1), assertExit);
+  printf(": discard 1 card - handCount is decremented by 1\n");
+
+  printf("discardCard(): ");
+  asserttrue(pre.deckCount[player] == state->deckCount[player] && memcmp(pre.deck[player], state->deck[player], sizeof(int)*MAX_DECK) == 0, assertExit);
+  printf(": discard 1 card - deck is unchanged\n");
+
+  printf("discardCard(): ");
+  asserttrue(state->discardCount[player] == (pre.discardCount[player]+1), assertExit);
+  printf(": discard 1 card - card is in discard pile\n");
+
+  int i;
+  int discardCount = state->handCount[player] + 1;
+  for (i = 0; i < (discardCount); i++) {
+    discardCard(0, player, state, 0);
+  }
+  printf("discardCard(): ");
+  asserttrue(state->handCount[player] >= 0, assertExit);
+  printf(": attempt to discard more cards than in hand - handCount is non-negative\n");
 }
 
-int main()
-{
-	int failedTests = 0;
+int main(int argc, char const *argv[]) {
+  // create a game
+  int seed = 1000;
+  struct gameState G;
+  int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+           sea_hag, tribute, smithy};
+  initializeGame(2, k, seed, &G);
 
-	printf("----------------- Testing Function: %s ----------------\n", TESTFUNCTION);
-
-	//Create array of expected costs.
-	int cost[treasure_map + 1];
-	cost[curse] = 0;
-	cost[estate] = 2;
-	cost[duchy] = 5;
-	cost[province] = 8;
-	cost[copper] = 0;
-	cost[silver] = 3;
-	cost[gold] = 6;
-	cost[adventurer] = 6;
-	cost[council_room] = 5;
-	cost[feast] = 4;
-	cost[gardens] = 4;
-	cost[mine] = 5;
-	cost[remodel] = 4;
-	cost[smithy] = 4;
-	cost[village] = 3;
-	cost[baron] = 4;
-	cost[great_hall] = 3;
-	cost[minion] = 5;
-	cost[steward] = 3;
-	cost[tribute] = 5;
-	cost[ambassador] = 3;
-	cost[cutpurse] = 4;
-	cost[embargo] = 2;
-	cost[outpost] = 5;
-	cost[salvager] = 4;
-	cost[sea_hag] = 4;
-	cost[treasure_map] = 4;
-
-	//Call getCost() on all cards.
-	int i;
-	for (i = 0; i < treasure_map + 1; i++)
-	{
-		printf("Card %d: cost = %d, expected = %d\n", i, getCost(i), cost[i]);
-		asserttrue(getCost(i), cost[i], &failedTests);
-	}
-
-	//Call getCost() on invalid/nonexistent card.
-	int invalid = -1;
-	printf("Card %d(invalid): return value = %d, expected = %d\n", invalid, getCost(invalid), -1);
-	asserttrue(getCost(invalid), -1, &failedTests);
-
-	////Asserts for all card costs.
-	//for (i = 0; i < treasure_map + 1; i++)
-	//{
-	//	assert(getCost(i) == cost[i]);
-	//}
-
-	if (failedTests > 0)
-	{
-		printf("\n >>>>> FAILED %d ASSERTIONS: Testing complete %s <<<<<\n\n", failedTests, TESTFUNCTION);
-	}
-	else
-	{
-		printf("\n >>>>> SUCCESS: Testing complete %s <<<<<\n\n", TESTFUNCTION);
-	}
-
-	return 0;
+  testDiscardCard(&G);
+  return 0;
 }

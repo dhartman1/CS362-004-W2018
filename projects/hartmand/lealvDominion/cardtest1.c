@@ -1,174 +1,106 @@
-/*
- * cardtest1.c
- * Alvin Le
- * CS362
- */
+/******************************************************************************
+ * AUTHOR: David Hartman
+ * CLASS: CS362
+ * DATE: 2018-02-04
+ * PROJECT: Assignment 3
+ * DESCRIPTION: Provide unit test for Smithy card
+ ******************************************************************************/
 
-/*
- * Include the following lines in your makefile:
- *
- * cardtest1: cardtest1.c dominion.o rngs.o
- *      gcc -o cardtest1 -g  cardtest1.c dominion.o rngs.o $(CFLAGS)
- */
-
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "dominion.h"
 #include "dominion_helpers.h"
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
 #include "rngs.h"
-#include <stdlib.h>
 
-#define TESTCARD "smithy"
+#define assertExit 0
 
-int asserttrue(int val1, int val2, int *fail)
-{
-	if (val1 != val2)
-	{
-		printf("***FAILED ASSERTION: %d == %d***\n", val1, val2);
-		(*fail)++;
-		return 0;
-	}
-	return 1;
+void asserttrue(int test, int exitOnFail);
+
+void testSmithyCard(struct gameState *state) {
+  // Store a copy of the gameState before the card is played
+  struct gameState pre;
+  memcpy (&pre, state, sizeof(struct gameState));
+
+  int player = whoseTurn(state);
+  int smithyPos = state->handCount[player] - 1;
+  int foundCard;
+  int handPos, deckPos, cardsChecked, discardPos, p;    // loop vars
+
+  playCard(smithyPos, adventurer, gardens, embargo, state);
+
+  // Check that 3 cards were drawn. +1 to account for discarded smithy
+  int numOfCardsDrawn = state->handCount[player] - pre.handCount[player] + 1;
+  asserttrue(numOfCardsDrawn == 3, assertExit);
+  printf(": player %d drew three cards\n", player);
+
+  // Check the new cards came from the player's deck
+  foundCard = 1;
+  for (handPos=smithyPos, deckPos=(pre.deckCount[player]), cardsChecked=0;
+      foundCard && handPos < state->handCount[player]; handPos++, deckPos--, cardsChecked++) {
+    foundCard = 0;
+
+    // The last card drawn would've been moved forward into the position where
+    //   the smithy was when it was discarded so that card is a special case
+    //   that must be checked
+    if (cardsChecked == 0 && numOfCardsDrawn <= pre.deckCount[player]) {
+      if (state->hand[player][handPos] == pre.deck[player][pre.deckCount[player]-numOfCardsDrawn]) {
+        // printf("Found special case card: %d\n", state->hand[player][handPos]);
+        foundCard = 1;
+      }
+    }
+    // Check the player's deck if there are enough cards in it
+    else if (cardsChecked > 0 && deckPos >= 0) {
+      if (state->hand[player][handPos] == pre.deck[player][deckPos]) {
+        // printf("Found in deck: %d\n", state->hand[player][handPos]);
+        foundCard = 1;
+      }
+    }
+    // Otherwise check the player's discard pile
+    else {
+      for (discardPos = 0; discardPos < pre.discardCount[player]; discardPos++) {
+        if (state->hand[player][handPos] == pre.discard[player][discardPos]) {
+          foundCard = 1;
+          // printf("Found in discard: %d\n", state->hand[player][handPos]);
+          break;
+        }
+      }
+    }
+  }
+  asserttrue(foundCard, assertExit);
+  printf(": all drawn cards came from the player %d's deck\n", player);
+
+  // Check the other players' statuses did not change
+  for (p=0; p<state->numPlayers; p++) {
+    if (p != player) {
+      asserttrue(pre.handCount[p] == state->handCount[p] && memcmp(pre.hand[p], state->hand[p], sizeof(int)*MAX_HAND) == 0, assertExit);
+      printf(": no changes to player %d's hand\n", p);
+
+      asserttrue(pre.deckCount[p] == state->deckCount[p] && memcmp(pre.deck[p], state->deck[p], sizeof(int)*MAX_DECK) == 0, assertExit);
+      printf(": no changes to player %d's deck\n", p);
+
+      asserttrue(pre.discardCount[p] == state->discardCount[p] && memcmp(pre.discard[p], state->discard[p], sizeof(int)*MAX_DECK) == 0, assertExit);
+      printf(": no changes to player %d's discard\n", p);
+    }
+  }
+
+  // Check the game's supply count did not change
+  asserttrue(memcmp(pre.supplyCount, state->supplyCount, sizeof(int) * (treasure_map+1)) == 0, assertExit);
+  printf(": no changes were made to supplyCount\n");
 }
 
-int test_smithy(struct gameState G)
-{
-	int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
-	//int numPlayers = 2;
-	int thisPlayer = 0;
-	int otherPlayer = 1;
-	int failedTests = 0;
-	struct gameState testG;
+int main(int argc, char const *argv[]) {
+  // create a game
+  int seed = 10;
+  struct gameState G;
+  int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+           sea_hag, tribute, smithy};
+  initializeGame(2, k, seed, &G);
 
-	int newCards;
-	int shuffledCards = 0;
-	int played = 1;
+  // draw smithy into hand
+  int gainToHand = 2;
+  gainCard(smithy, &G, gainToHand, whoseTurn(&G));
 
-	// copy the game state to a test case
-	memcpy(&testG, &G, sizeof(struct gameState));
-
-	cardEffect(smithy, choice1, choice2, choice3, &testG, handpos, &bonus);
-
-	//Card player should recieve 3 cards.
-	newCards = 3;
-	printf("hand count = %d, expected = %d\n", testG.handCount[thisPlayer], G.handCount[thisPlayer] + newCards - played);
-	asserttrue(testG.handCount[thisPlayer], G.handCount[thisPlayer] + newCards - played, &failedTests);
-
-	//The 3 cards should come from card player's deck.
-	if (G.deckCount[thisPlayer] < 3) //Discard pile is shuffled back into deck.
-	{
-		shuffledCards = G.discardCount[thisPlayer];
-	}
-	printf("deck count = %d, expected = %d\n", testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards);
-	asserttrue(testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards, &failedTests);
-
-	//Number of coins should remain the same.
-	printf("coins = %d, expected = %d\n", testG.coins, G.coins);
-	asserttrue(testG.coins, G.coins, &failedTests);
-
-	//Number of actions should remain the same.
-	printf("actions = %d, expected = %d\n", testG.numActions, G.numActions);
-	asserttrue(testG.numActions, G.numActions, &failedTests);
-
-	//No state change should occur for other player.
-	printf("---Checking that no state change occurs for other player---\n");
-	printf("other player's hand count = %d, expected = %d\n", testG.handCount[otherPlayer], G.handCount[otherPlayer]);
-	asserttrue(testG.handCount[otherPlayer], G.handCount[otherPlayer], &failedTests);
-
-	printf("other player's deck count = %d, expected = %d\n", testG.deckCount[otherPlayer], G.deckCount[otherPlayer]);
-	asserttrue(testG.deckCount[otherPlayer], G.deckCount[otherPlayer], &failedTests);
-
-	printf("other player's discard count = %d, expected = %d\n", testG.discardCount[otherPlayer], G.discardCount[otherPlayer]);
-	asserttrue(testG.discardCount[otherPlayer], G.discardCount[otherPlayer], &failedTests);
-
-	//No state change for supply cards (curse, treasure, victory, and kingdom cards).
-	printf("----Checking that no state change has occured for supply cards (curse, treasure, victory, and kingdom cards)---\n");
-	int i;
-	for (i = 0; i < treasure_map + 1; i++) //loop through supply cards.
-	{
-		printf("supply card %d: count = %d, expected: count = %d\n", i, testG.supplyCount[i], G.supplyCount[i]);
-		asserttrue(testG.supplyCount[i], G.supplyCount[i], &failedTests);
-	}
-
-
-	////Assertions for card player.
-	//assert(testG.handCount[thisPlayer] == G.handCount[thisPlayer] + newCards - played);
-	//assert(testG.deckCount[thisPlayer] == G.deckCount[thisPlayer] - newCards + shuffledCards);
-	//assert(testG.coins == G.coins);
-	//assert(testG.numActions == G.numActions);
-
-	////Assertions for other player.
-	//assert(testG.handCount[otherPlayer] == G.handCount[otherPlayer]);
-	//assert(testG.deckCount[otherPlayer] == G.deckCount[otherPlayer]);
-	//assert(testG.discardCount[otherPlayer] == G.discardCount[otherPlayer]);
-
-	////Assertions for supply.
-	//for (i = 0; i < treasure_map + 1; i++)
-	//{
-	//	assert(testG.supplyCount[i] == G.supplyCount[i]);
-	//}
-
-	return failedTests;
+  testSmithyCard(&G);
+  return 0;
 }
-
-int main() {
-	int failedTests = 0;
-	int ret;
-
-
-    //int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
-    //int remove1, remove2;
-    int seed = 1000;
-    int numPlayers = 2;
-    int thisPlayer = 0;
-	//int otherPlayer = 1;
-	struct gameState G;
-
-	//Kingdom cards.
-	int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
-			sea_hag, tribute, smithy, council_room};
-
-	// initialize a game state and player cards
-	initializeGame(numPlayers, k, seed, &G);
-
-	printf("----------------- Testing Card: %s ----------------\n", TESTCARD);
-
-	// ----------- TEST 1: +3 cards, > 3 cards in deck. --------------
-	printf("----TEST 1: +3 cards, > 3 cards in deck----\n");
-	ret = test_smithy(G);
-	failedTests += ret;
-
-
-	// ----------- TEST 2: +3 cards, < 3 cards in deck. --------------
-	printf("----TEST 2: +3 cards, < 3 cards in deck----\n");
-
-	//Reset game.
-	memset(&G, 23, sizeof(struct gameState));   // clear the game state
-	initializeGame(numPlayers, k, seed, &G); // initialize a new game
-
-	G.deckCount[thisPlayer] = 1;
-	G.deck[thisPlayer][0] = copper;
-
-	G.discardCount[thisPlayer] = 4;
-	G.discard[thisPlayer][0] = estate;
-	G.discard[thisPlayer][0] = estate;
-	G.discard[thisPlayer][0] = estate;
-	G.discard[thisPlayer][0] = estate;
-	ret = test_smithy(G);
-	failedTests += ret;
-
-	if (failedTests > 0)
-	{
-		printf("\n >>>>> FAILED %d ASSERTIONS: Testing complete %s <<<<<\n\n", failedTests, TESTCARD);
-	}
-	else
-	{
-		printf("\n >>>>> SUCCESS: Testing complete %s <<<<<\n\n", TESTCARD);
-	}
-
-	return 0;
-}
-
-
