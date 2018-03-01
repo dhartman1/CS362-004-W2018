@@ -91,7 +91,8 @@ void testAdventurer() {
     gainCard(adventurer, &game, 2, player); // 2 is toHand
     memcpy(&pre, &game, sizeof(struct gameState));
 
-    adventurerAction(player, &game, drawntreasure, temphand);
+    handPos = game.handCount[player] - 1;
+    adventurer_effect(&game, handPos);
 
     // Test player's hand
     int preTreasure = getNumberOfTreasureCards(pre.hand[player], pre.handCount[player]);
@@ -102,7 +103,6 @@ void testAdventurer() {
     printf(": player %d - at most 2 treasures were drawn\n", player);
 
     // Simulate adventurer played on pre hand
-    handPos = pre.handCount[player] - 1;
     cardsDrawn = (game.handCount[player] - pre.handCount[player]);
     foundTreasuresWithoutShuffle = 0;
 

@@ -74,7 +74,8 @@ void testVillage() {
     gainCard(village, &game, 2, player); // 2 is toHand
     memcpy(&pre, &game, sizeof(struct gameState));
 
-    villageAction(player, &game, game.handCount[player]-1);
+    handPos = game.handCount[player] - 1;
+    village_effect(&game, handPos);
 
     // Test 1 card was played
     cardsPlayed = game.playedCardCount - pre.playedCardCount;
@@ -98,7 +99,6 @@ void testVillage() {
     printf(": player %d - 2 actions were added\n", player);
 
     // Simulate village played on pre hand
-    handPos = pre.handCount[player] - 1;
     didNotBreak = 1;
     for (j = 0; j < cardsDrawn; j++) {
       if (pre.deckCount[player] > 0) {

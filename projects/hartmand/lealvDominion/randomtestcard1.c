@@ -70,7 +70,8 @@ void testSmithy() {
     gainCard(smithy, &game, 2, player); // 2 is toHand
     memcpy(&pre, &game, sizeof(struct gameState));
 
-    smithyAction(player, &game, game.handCount[player]-1);
+    handPos = game.handCount[player] - 1;
+    smithy_effect(&game, handPos);
 
     // Test 1 card was played
     cardsPlayed = game.playedCardCount - pre.playedCardCount;
@@ -90,7 +91,6 @@ void testSmithy() {
     }
 
     // Simulate smithy played on pre hand
-    handPos = pre.handCount[player] - 1;
     didNotBreak = 1;
     for (j = 0; j < cardsDrawn; j++) {
       if (pre.deckCount[player] > 0) {
