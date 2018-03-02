@@ -1,0 +1,103 @@
+The following bug reports use the Noverse Bug Reporting Template:
+http://www.noverse.com/images/noverse-bug-reporting-template.txt
+
+Bug #1:
+    Title: Dominion - smithy_effect card drawing bug
+
+    Class: Serious Bug
+
+    Date: 2018-03-01
+    Reported By: David Hartman
+    Email: hartmand@oregonstate.edu
+
+    Product: Alvin Le's Dominion
+    Platform: Windows Subsystem for Linux - Ubuntu
+
+    Is it reproducible: Yes
+
+    Description
+    ===========
+    When playing the Smithy card in the dominion game an incorrect number of
+    cards are drawn into the current player's hand. This bug occurs every time
+    the Smithy card is played.
+
+    Steps to Produce/Reproduce
+    --------------------------
+    In the following code, smithyPos is the position of the Smithy card in the
+    current player's hand and state is a pointer to the game state.
+
+        playCard(smithyPos, 0, 0, 0, state);
+
+    Expected Results
+    ----------------
+    Since the Smithy card is discarded when played (hand count loses 1) and the
+    Smithy card causes 3 cards to be drawn (hand count gains 3), I expected a
+    net gain of 2 cards to the players hand.
+
+    Actual Results
+    --------------
+    There were 2 cards drawn into the hand and 1 card was discarded. Therefore
+    the player's hand resulted in a net gain of 1 card.
+
+
+-------------------------------------------------------------------------------
+
+
+Bug #2:
+    Title: Dominion - village_effect numActions bug
+
+    Class: Serious Bug
+
+    Date: 2018-03-01
+    Reported By: David Hartman
+    Email: hartmand@oregonstate.edu
+
+    Product: Alvin Le's Dominion
+    Platform: Windows Subsystem for Linux - Ubuntu
+
+    Is it reproducible: Yes
+
+    Description
+    ===========
+    When playing the Village card in the dominion game there are unexpected
+    effects on the player's numActions. This bug occurs every time the Village
+    card is played.
+
+    Steps to Produce/Reproduce
+    --------------------------
+    In the following code, villagePos is the position of the Village card in the
+    current player's hand and state is a pointer to the game state.
+
+        playCard(villagePos, 0, 0, 0, state);
+
+    Expected Results
+    ----------------
+    In order for a player to play a card, they must have at least 1 action
+    available. This is no different for the Village card. One of the effects of
+    the Village card is that the player will gain 2 additional actions that
+    turn. With both of these statements, the net gain of actions for a player
+    should be 1. The following table shows the ending numActions for various
+    starting numActions.
+
+     Starting numActions | Ending numActions (+2 -1)
+    ---------------------+---------------------------
+                       1 |                         2
+                       2 |                         3
+                       3 |                         4
+                       4 |                         5
+
+    Actual Results
+    --------------
+    Instead of increasing the number of actions by 2 and then removing 1 for
+    playing the Village card, the program sets the number of actions to 2 and
+    then removes one for playing the Village card. This results in 1 available
+    action for the player no matter how many they started with. The following
+    table shows what actually happens to numActions for various starting
+    numActions.
+
+    Starting numActions | Ending numActions (=2 -1)
+   ---------------------+---------------------------
+                      1 |                         1
+                      2 |                         1
+                      3 |                         1
+                      4 |                         1
