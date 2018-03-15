@@ -186,6 +186,7 @@ public class UrlValidatorTest extends TestCase {
        UrlValidator validator = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
 
        int count = 0;
+       int total = 0;
        String url;
        boolean expected, result;
 
@@ -194,23 +195,39 @@ public class UrlValidatorTest extends TestCase {
                for (ResultPair port: testUrlParts[2]) {
                    for (ResultPair path: testUrlParts[3]) {
                        for (ResultPair query: testUrlParts[4]) {
-                           count++;
+                           total++;
 
                            url = String.join("", scheme.item, authority.item, port.item, path.item, query.item);
-                           result = validator.isValid(url);
                            expected = scheme.valid & authority.valid & port.valid & path.valid & query.valid;
 
-                           if (expected != result)
-                               System.out.println("FAILED: testIsValid(): " + url);
+                           try {
+                               result = validator.isValid(url);
+                           } catch (Throwable e) {
+//                               System.out.println("VALIDATOR ERROR: testIsValid(): " + url);
+                               count++;
+                               continue;
+                           }
 
-                           assertEquals(url, expected, result);
+                           if (result != expected) {
+                               count++;
+//                               System.out.println("FAILED: testIsValid(): " + url);
+                           }
                        }
                    }
                }
            }
        }
 
-       System.out.println("PASSED: testIsValid()");
+       if (count == 0) {
+           System.out.println("testIsValid(): PASSED");
+       } else {
+           System.out.print("testIsValid(): ");
+           System.out.print(count);
+           System.out.print(" OUT OF ");
+           System.out.print(total);
+           System.out.println(" TESTS FAILED");
+       }
+       assertTrue(count == 0);
 
    }
 
