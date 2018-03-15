@@ -30,18 +30,156 @@ public class UrlValidatorTest extends TestCase {
    }
 
 
-   public void testYourFirstPartition()
-   {
-       //You can use this function to implement your First Partition testing
-
-   }
-
-   public void testYourSecondPartition()
-   {
-       //You can use this function to implement your Second Partition testing
-
-   }
-   //You need to create more test cases for your Partitions if you need to
+    //Minimal URL. Valid scheme and authority. Use "http://" scheme.
+    public void testPartition1()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Minimal URL. Valid scheme and authority. Use "ftp://" scheme.
+    public void testPartition2()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "ftp://www.google.com";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Minimal URL. Valid scheme and authority. Use "h3t://" scheme.
+    public void testPartition3()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "h3t://www.google.com";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Valid scheme, valid authority, valid port
+    public void testPartition4()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com:80";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Valid scheme, valid authority, valid path
+    public void testPartition5()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com/path";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Valid scheme, valid authority, valid query
+    public void testPartition6()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com?action=view";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //All parts in URL are present and valid.
+    public void testPartition7()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com:80/test1?action=view";
+        boolean expected = true;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Invalid scheme.
+    public void testPartition8()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "://www.google.com:80/test1?action=view";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Invalid authority.
+    public void testPartition9()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://aaa:80/test1?action=view";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Invalid port.
+    public void testPartition10()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com:-1/test1?action=view";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Invalid path.
+    public void testPartition11()
+    {
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://www.google.com:80/..?action=view";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Two URL parts invalid.
+    public void testPartition12(){
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "http://aaa:80/..";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Three URL parts invalid.
+    public void testPartition13(){
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "://aaa:80/..";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
+    
+    //Four URL parts invalid.
+    public void testPartition14(){
+        UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+        String url = "://aaa:-1/..";
+        boolean expected = false;
+        boolean result = urlVal.isValid(url);
+        System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
+        assertEquals(url, expected, result);
+    }
 
    public void testIsValid()
    {
