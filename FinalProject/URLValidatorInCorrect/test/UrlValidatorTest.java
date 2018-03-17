@@ -18,7 +18,7 @@ public class UrlValidatorTest extends TestCase {
       //Create a UrlValidator object instance
       UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
 
-      System.out.println("**********manual test start**********");
+      System.out.println("********** Manual Test Start **********");
       //Manual tests by printing to console the result
 
       System.out.print("testing: http://www.google.com");
@@ -152,12 +152,14 @@ public class UrlValidatorTest extends TestCase {
       }
       
       System.out.println("testManualtest(): " + failedCount + " OUT OF 13 TESTS FAILED");
-      System.out.println("***********manual test end***********");
+      System.out.println("*********** Manual Test End ***********");
    }
 
     //Minimal URL. Valid scheme and authority. Use "http://" scheme.
     public void testPartition1()
     {
+        System.out.println("\n********** Partition Test Start **********");
+
         UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
         String url = "http://www.google.com";
         boolean expected = true;
@@ -304,68 +306,74 @@ public class UrlValidatorTest extends TestCase {
         boolean result = urlVal.isValid(url);
         System.out.println("url = " + url + ", expected = " + expected + ", result = " + result);
         assertEquals(url, expected, result);
+
+        System.out.println("********** Partition Test End **********");
     }
 
-   //Unit test to test all combinations of testUrlParts
-   public void testIsValid()
-   {
-       UrlValidator validator = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
+    //Unit test to test all combinations of testUrlParts
+    public void testIsValid()
+    {
+        UrlValidator validator = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
 
-       int failCount = 0;
-       int totalTestCount = 0;
-       String url;
-       boolean expected, result;
+        int failCount = 0;
+        int totalTestCount = 0;
+        String url;
+        boolean expected, result;
 
-       //Iterate through all parts of testUrlParts
-       for (ResultPair scheme: testUrlParts[0]) {
-           for (ResultPair authority: testUrlParts[1]) {
-               for (ResultPair port: testUrlParts[2]) {
-                   for (ResultPair path: testUrlParts[3]) {
-                       for (ResultPair query: testUrlParts[4]) {
-                           totalTestCount++;
+        System.out.println("\n********** Unit Test Start**********");
 
-                           //Join the current scheme, authority, port, path, and query into a url string
-                           url = String.join("", scheme.item, authority.item, port.item, path.item, query.item);
-                           expected = scheme.valid & authority.valid & port.valid & path.valid & query.valid;
+        //Iterate through all parts of testUrlParts
+        for (ResultPair scheme : testUrlParts[0]) {
+            for (ResultPair authority : testUrlParts[1]) {
+                for (ResultPair port : testUrlParts[2]) {
+                    for (ResultPair path : testUrlParts[3]) {
+                        for (ResultPair query : testUrlParts[4]) {
+                            totalTestCount++;
 
-                           //If validator.isValid(url) throws an error, count that as a fail
-                           try {
-                               result = validator.isValid(url);
-                           } catch (Throwable e) {
-//                               System.out.println("VALIDATOR ERROR: testIsValid(): " + url);
-                               failCount++;
-                               continue;
-                           }
+                            //Join the current scheme, authority, port, path, and query into a url string
+                            url = String.join("", scheme.item, authority.item, port.item, path.item, query.item);
+                            expected = scheme.valid & authority.valid & port.valid & path.valid & query.valid;
 
-                           //If result doesn't match expected, count that as a fail
-                           if (result != expected) {
-                               failCount++;
-//                               System.out.println("FAILED: testIsValid(): " + url);
-                           }
-                       }
-                   }
-               }
-           }
-       }
+                            //If validator.isValid(url) throws an error, count that as a fail
+                            try {
+                                result = validator.isValid(url);
+                            } catch (Throwable e) {
+                                //System.out.println("VALIDATOR ERROR: testIsValid(): " + url);
+                                failCount++;
+                                continue;
+                            }
 
-       //Print results
-       if (failCount == 0) {
-           System.out.println("testIsValid(): PASSED");
-       } else {
-           System.out.print("testIsValid(): ");
-           System.out.print(failCount);
-           System.out.print(" OUT OF ");
-           System.out.print(totalTestCount);
-           System.out.println(" TESTS FAILED");
-       }
+                            //If result doesn't match expected, count that as a fail
+                            if (result != expected) {
+                                failCount++;
+                                //System.out.println("FAILED: testIsValid(): " + url);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-       //Assert that 0 tests failed
-       assertTrue(failCount == 0);
+        //Print results
+        if (failCount == 0) {
+            System.out.println("testIsValid(): PASSED");
+        } else {
+            System.out.print("testIsValid(): ");
+            System.out.print(failCount);
+            System.out.print(" OUT OF ");
+            System.out.print(totalTestCount);
+            System.out.println(" TESTS FAILED");
+        }
 
-   }
+        System.out.println("********** Unit Test End **********");
 
-   //-------------------- Test data for creating a composite URL
-   ResultPair[] testUrlScheme = { new ResultPair("http://", true),
+        //Assert that 0 tests failed
+        assertTrue(failCount == 0);
+
+    }
+
+    //-------------------- Test data for creating a composite URL
+    ResultPair[] testUrlScheme = { new ResultPair("http://", true),
                                   new ResultPair("ftp://", true),
                                   new ResultPair("h3t://", true),
                                   new ResultPair("3ht://", false),
@@ -374,48 +382,48 @@ public class UrlValidatorTest extends TestCase {
                                   new ResultPair("http/", false),
                                   new ResultPair("://", false) };
 
-   ResultPair[] testUrlAuthority = { new ResultPair("www.google.com", true),
-                                     new ResultPair("go.com", true),
-                                     new ResultPair("go.au", true),
-                                     new ResultPair("0.0.0.0", true),
-                                     new ResultPair("255.255.255.255", true),
-                                     new ResultPair("256.256.256.256", false),
-                                     new ResultPair("255.com", true),
-                                     new ResultPair("1.2.3.4.5", false),
-                                     new ResultPair("1.2.3.4.", false),
-                                     new ResultPair("1.2.3", false),
-                                     new ResultPair(".1.2.3.4", false),
-                                     new ResultPair("go.a", false),
-                                     new ResultPair("go.a1a", false),
-                                     new ResultPair("go.1aa", false),
-                                     new ResultPair("aaa.", false),
-                                     new ResultPair(".aaa", false),
-                                     new ResultPair("aaa", false),
-                                     new ResultPair("", false) };
+    ResultPair[] testUrlAuthority = { new ResultPair("www.google.com", true),
+                                      new ResultPair("go.com", true),
+                                      new ResultPair("go.au", true),
+                                      new ResultPair("0.0.0.0", true),
+                                      new ResultPair("255.255.255.255", true),
+                                      new ResultPair("256.256.256.256", false),
+                                      new ResultPair("255.com", true),
+                                      new ResultPair("1.2.3.4.5", false),
+                                      new ResultPair("1.2.3.4.", false),
+                                      new ResultPair("1.2.3", false),
+                                      new ResultPair(".1.2.3.4", false),
+                                      new ResultPair("go.a", false),
+                                      new ResultPair("go.a1a", false),
+                                      new ResultPair("go.1aa", false),
+                                      new ResultPair("aaa.", false),
+                                      new ResultPair(".aaa", false),
+                                      new ResultPair("aaa", false),
+                                      new ResultPair("", false) };
 
-   ResultPair[] testUrlPort = { new ResultPair(":80", true),
-                                new ResultPair(":65535", true),
-                                new ResultPair(":0", true),
-                                new ResultPair("", true),
-                                new ResultPair(":-1", false),
-                                new ResultPair(":65636",false),
-                                new ResultPair(":65a", false) };
+    ResultPair[] testUrlPort = { new ResultPair(":80", true),
+                                 new ResultPair(":65535", true),
+                                 new ResultPair(":0", true),
+                                 new ResultPair("", true),
+                                 new ResultPair(":-1", false),
+                                 new ResultPair(":65636",false),
+                                 new ResultPair(":65a", false) };
 
-   ResultPair[] testPath = { new ResultPair("/test1", true),
-                             new ResultPair("/t123", true),
-                             new ResultPair("/$23", true),
-                             new ResultPair("/..", false),
-                             new ResultPair("/../", false),
-                             new ResultPair("/test1/", true),
-                             new ResultPair("", true),
-                             new ResultPair("/test1/file", true),
-                             new ResultPair("/..//file", false),
-                             new ResultPair("/test1//file", false) };
+    ResultPair[] testPath = { new ResultPair("/test1", true),
+                              new ResultPair("/t123", true),
+                              new ResultPair("/$23", true),
+                              new ResultPair("/..", false),
+                              new ResultPair("/../", false),
+                              new ResultPair("/test1/", true),
+                              new ResultPair("", true),
+                              new ResultPair("/test1/file", true),
+                              new ResultPair("/..//file", false),
+                              new ResultPair("/test1//file", false) };
 
-   ResultPair[] testUrlQuery = { new ResultPair("?action=view", true),
-                                 new ResultPair("?action=edit&mode=up", true),
-                                 new ResultPair("", true) };
+    ResultPair[] testUrlQuery = { new ResultPair("?action=view", true),
+                                  new ResultPair("?action=edit&mode=up", true),
+                                  new ResultPair("", true) };
 
-   ResultPair[][] testUrlParts = {testUrlScheme, testUrlAuthority, testUrlPort, testPath, testUrlQuery};
+    ResultPair[][] testUrlParts = { testUrlScheme, testUrlAuthority, testUrlPort, testPath, testUrlQuery };
 
 }
