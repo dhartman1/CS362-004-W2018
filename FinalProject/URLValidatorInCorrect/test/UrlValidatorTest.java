@@ -306,35 +306,40 @@ public class UrlValidatorTest extends TestCase {
         assertEquals(url, expected, result);
     }
 
+   //Unit test to test all combinations of testUrlParts
    public void testIsValid()
    {
        UrlValidator validator = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
 
-       int count = 0;
-       int total = 0;
+       int failCount = 0;
+       int totalTestCount = 0;
        String url;
        boolean expected, result;
 
+       //Iterate through all parts of testUrlParts
        for (ResultPair scheme: testUrlParts[0]) {
            for (ResultPair authority: testUrlParts[1]) {
                for (ResultPair port: testUrlParts[2]) {
                    for (ResultPair path: testUrlParts[3]) {
                        for (ResultPair query: testUrlParts[4]) {
-                           total++;
+                           totalTestCount++;
 
+                           //Join the current scheme, authority, port, path, and query into a url string
                            url = String.join("", scheme.item, authority.item, port.item, path.item, query.item);
                            expected = scheme.valid & authority.valid & port.valid & path.valid & query.valid;
 
+                           //If validator.isValid(url) throws an error, count that as a fail
                            try {
                                result = validator.isValid(url);
                            } catch (Throwable e) {
 //                               System.out.println("VALIDATOR ERROR: testIsValid(): " + url);
-                               count++;
+                               failCount++;
                                continue;
                            }
 
+                           //If result doesn't match expected, count that as a fail
                            if (result != expected) {
-                               count++;
+                               failCount++;
 //                               System.out.println("FAILED: testIsValid(): " + url);
                            }
                        }
@@ -343,16 +348,19 @@ public class UrlValidatorTest extends TestCase {
            }
        }
 
-       if (count == 0) {
+       //Print results
+       if (failCount == 0) {
            System.out.println("testIsValid(): PASSED");
        } else {
            System.out.print("testIsValid(): ");
-           System.out.print(count);
+           System.out.print(failCount);
            System.out.print(" OUT OF ");
-           System.out.print(total);
+           System.out.print(totalTestCount);
            System.out.println(" TESTS FAILED");
        }
-       assertTrue(count == 0);
+
+       //Assert that 0 tests failed
+       assertTrue(failCount == 0);
 
    }
 
