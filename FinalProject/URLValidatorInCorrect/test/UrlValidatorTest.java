@@ -10,23 +10,229 @@ public class UrlValidatorTest extends TestCase {
 
    public void testManualTest()
    {
-      //Varible that holds the test result
-      boolean retResult;
-
       //You can use this function to implement your manual testing
-      //Create a UrlValidator object 
+      //Variable that holds the test result
+      boolean retResult;
+      int failedCount = 0;
+
+      //Create a UrlValidator object instance
       UrlValidator urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
 
-      //Manual tests, by using console screen to print the return value of "isValid"
-      retResult = urlVal.isValid("http://www.google.com:27951");
-      System.out.println(retResult);
+      System.out.println("**********manual test start**********");
+      //Manual tests by printing to console the result
 
+      System.out.print("testing: http://www.google.com");
       retResult = urlVal.isValid("http://www.google.com");
-      System.out.println(retResult);
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+      assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
 
+      System.out.print("testing: http:///www.google.com");
+      retResult = urlVal.isValid("http:///www.google.com");
+      System.out.println("	result: " + retResult + " expected: false");
+      try{
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http:www.google.com");
+      retResult = urlVal.isValid("http:www.google.com");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+      assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: httpwww.google.com");
+      retResult = urlVal.isValid("httpwww.google.com");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+      assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: www.google.com");
+      retResult = urlVal.isValid("www.google.com");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+      assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.google.com:27951");
+      retResult = urlVal.isValid("http://www.google.com:27951");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+      assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.google.com:80");
+      retResult = urlVal.isValid("http://www.google.com:80");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+      assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.google.com:abc");
+      retResult = urlVal.isValid("http://www.google.com:abc");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.google.com?text=123");
+      retResult = urlVal.isValid("http://www.google.com?text=123");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.google.com!text=123");
+      retResult = urlVal.isValid("http://www.google.com!text=123");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.google.tx");
+      retResult = urlVal.isValid("http://www.google.tx");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://192.168.1.168");
       retResult = urlVal.isValid("http://192.168.1.168");
-      System.out.println(retResult);
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+      
+      System.out.print("testing: http://www.dropbox.com");
+      retResult = urlVal.isValid("http://www.dropbox.com");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
 
+      System.out.print("testing: http://www.dropbox.com:234");
+      retResult = urlVal.isValid("http://www.dropbox.com:234");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.drop/box.com");
+      retResult = urlVal.isValid("http://www.drop/box.com");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.dropbox.com");
+      retResult = urlVal.isValid("http://www.dropbox.com");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.dropbox.com:65535");
+      retResult = urlVal.isValid("http://www.dropbox.com:65535");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.dropbox.com");
+      retResult = urlVal.isValid("http://www.dropbox.com");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://www.dropbox.com");
+      retResult = urlVal.isValid("http://www.dropbox.com");
+      System.out.println("	result: " + retResult + " expected: true");
+      try {
+    	  assertEquals(true, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://192.168.1.168.com");
+      retResult = urlVal.isValid("http://192.168.1.168.com");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+
+      System.out.print("testing: http://256.257.258.259");
+      retResult = urlVal.isValid("http://256.257.258.259");
+      System.out.println("	result: " + retResult + " expected: false");
+      try {
+    	  assertEquals(false, retResult);
+      }catch (AssertionError e){
+    	  System.out.println("Test failed: " + e.getMessage());
+    	  failedCount++;
+      }
+      
+      System.out.println("testManualtest(): " + failedCount + " OUT OF 21 TESTS FAILED");
+      System.out.println("***********manual test end***********");
    }
 
 
