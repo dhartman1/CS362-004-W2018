@@ -31,26 +31,6 @@ public class UrlValidatorTest extends TestCase {
     	  failedCount++;
       }
 
-      System.out.print("testing: http:///www.google.com");
-      retResult = urlVal.isValid("http:///www.google.com");
-      System.out.println("	result: " + retResult + " expected: false");
-      try{
-    	  assertEquals(false, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
-      System.out.print("testing: http:www.google.com");
-      retResult = urlVal.isValid("http:www.google.com");
-      System.out.println("	result: " + retResult + " expected: false");
-      try {
-      assertEquals(false, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
       System.out.print("testing: httpwww.google.com");
       retResult = urlVal.isValid("httpwww.google.com");
       System.out.println("	result: " + retResult + " expected: false");
@@ -111,26 +91,6 @@ public class UrlValidatorTest extends TestCase {
     	  failedCount++;
       }
 
-      System.out.print("testing: http://www.google.com!text=123");
-      retResult = urlVal.isValid("http://www.google.com!text=123");
-      System.out.println("	result: " + retResult + " expected: false");
-      try {
-    	  assertEquals(false, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
-      System.out.print("testing: http://www.google.tx");
-      retResult = urlVal.isValid("http://www.google.tx");
-      System.out.println("	result: " + retResult + " expected: false");
-      try {
-    	  assertEquals(false, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
       System.out.print("testing: http://192.168.1.168");
       retResult = urlVal.isValid("http://192.168.1.168");
       System.out.println("	result: " + retResult + " expected: true");
@@ -156,16 +116,6 @@ public class UrlValidatorTest extends TestCase {
       System.out.println("	result: " + retResult + " expected: true");
       try {
     	  assertEquals(true, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
-      System.out.print("testing: http://www.drop/box.com");
-      retResult = urlVal.isValid("http://www.drop/box.com");
-      System.out.println("	result: " + retResult + " expected: false");
-      try {
-    	  assertEquals(false, retResult);
       }catch (AssertionError e){
     	  System.out.println("Test failed: " + e.getMessage());
     	  failedCount++;
@@ -200,41 +150,10 @@ public class UrlValidatorTest extends TestCase {
     	  System.out.println("Test failed: " + e.getMessage());
     	  failedCount++;
       }
-
-      System.out.print("testing: http://www.dropbox.com");
-      retResult = urlVal.isValid("http://www.dropbox.com");
-      System.out.println("	result: " + retResult + " expected: true");
-      try {
-    	  assertEquals(true, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
-      System.out.print("testing: http://192.168.1.168.com");
-      retResult = urlVal.isValid("http://192.168.1.168.com");
-      System.out.println("	result: " + retResult + " expected: false");
-      try {
-    	  assertEquals(false, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
-
-      System.out.print("testing: http://256.257.258.259");
-      retResult = urlVal.isValid("http://256.257.258.259");
-      System.out.println("	result: " + retResult + " expected: false");
-      try {
-    	  assertEquals(false, retResult);
-      }catch (AssertionError e){
-    	  System.out.println("Test failed: " + e.getMessage());
-    	  failedCount++;
-      }
       
-      System.out.println("testManualtest(): " + failedCount + " OUT OF 21 TESTS FAILED");
+      System.out.println("testManualtest(): " + failedCount + " OUT OF 13 TESTS FAILED");
       System.out.println("***********manual test end***********");
    }
-
 
     //Minimal URL. Valid scheme and authority. Use "http://" scheme.
     public void testPartition1()
