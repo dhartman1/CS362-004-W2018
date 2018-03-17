@@ -152,7 +152,7 @@ public class UrlValidatorTest extends TestCase {
       }
       
       System.out.println("testManualtest(): " + failedCount + " OUT OF 13 TESTS FAILED");
-      System.out.println("*********** Manual Test End ***********");
+      System.out.println("********** Manual Test End **********");
    }
 
     //Minimal URL. Valid scheme and authority. Use "http://" scheme.
@@ -320,7 +320,7 @@ public class UrlValidatorTest extends TestCase {
         String url;
         boolean expected, result;
 
-        System.out.println("\n********** Unit Test Start**********");
+        System.out.println("\n********** Unit Test Start **********");
 
         //Iterate through all parts of testUrlParts
         for (ResultPair scheme : testUrlParts[0]) {
