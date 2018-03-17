@@ -121,8 +121,8 @@ public class UrlValidatorTest extends TestCase {
     	  failedCount++;
       }
 
-      System.out.print("testing: http://www.dropbox.com");
-      retResult = urlVal.isValid("http://www.dropbox.com");
+      System.out.print("testing: http://www.dropbox2.com");
+      retResult = urlVal.isValid("http://www.dropbox2.com");
       System.out.println("	result: " + retResult + " expected: true");
       try {
     	  assertEquals(true, retResult);
@@ -141,8 +141,8 @@ public class UrlValidatorTest extends TestCase {
     	  failedCount++;
       }
 
-      System.out.print("testing: http://www.dropbox.com");
-      retResult = urlVal.isValid("http://www.dropbox.com");
+      System.out.print("testing: http://www.dropbox3.com");
+      retResult = urlVal.isValid("http://www.dropbox3.com");
       System.out.println("	result: " + retResult + " expected: true");
       try {
     	  assertEquals(true, retResult);
